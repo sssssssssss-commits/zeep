@@ -1,0 +1,120 @@
+{
+  "configVersion": "v3",
+  "app": {
+    "appType": "app",
+    "version": {
+      "code": 1,
+      "name": "1.0.0"
+    },
+    "appId": 10086001,
+    "appName": "高铁行程",
+    "icon": "icon.png",
+    "vender": "rail-sync",
+    "description": "手机导入订单，连接时同步，离线查看"
+  },
+  "runtime": {
+    "apiVersion": {
+      "compatible": "3.0",
+      "target": "3.0",
+      "minVersion": "3.0"
+    }
+  },
+  "permissions": [
+    "data:os.device.info",
+    "device:os.local_storage"
+  ],
+  "targets": {
+    "gt": {
+      "module": {
+        "page": {
+          "pages": ["page/home/index.page"]
+        },
+        "app-side": {
+          "path": "app-side/index"
+        },
+        "setting": {
+          "path": "setting/index"
+        }
+      },
+      "platforms": [
+        {
+          "name": "active2-square",
+          "deviceSource": 10223872,
+          "st": "s",
+          "dw": 390
+        },
+        {
+          "name": "active2-square",
+          "deviceSource": 10223873,
+          "st": "s",
+          "dw": 390
+        },
+        {
+          "name": "active2-square",
+          "deviceSource": 10223875,
+          "st": "s",
+          "dw": 390
+        },
+        {
+          "name": "active2-round",
+          "deviceSource": 8913152,
+          "st": "r",
+          "dw": 466
+        },
+        {
+          "name": "active2-round",
+          "deviceSource": 8913153,
+          "st": "r",
+          "dw": 466
+        },
+        {
+          "name": "active2-round",
+          "deviceSource": 8913155,
+          "st": "r",
+          "dw": 466
+        },
+        {
+          "name": "active2-round",
+          "deviceSource": 8913159,
+          "st": "r",
+          "dw": 466
+        },
+        {
+          "name": "active2-round",
+          "deviceSource": 10092800,
+          "st": "r",
+          "dw": 466
+        },
+        {
+          "name": "active2-round",
+          "deviceSource": 10092801,
+          "st": "r",
+          "dw": 466
+        },
+        {
+          "name": "active2-round",
+          "deviceSource": 10092803,
+          "st": "r",
+          "dw": 466
+        },
+        {
+          "name": "active2-round",
+          "deviceSource": 10092807,
+          "st": "r",
+          "dw": 466
+        }
+      ],
+      "designWidth": 466
+    }
+  },
+  "i18n": {
+    "zh-CN": {
+      "appName": "高铁行程"
+    },
+    "en-US": {
+      "appName": "Rail Sync"
+    }
+  },
+  "defaultLanguage": "zh-CN",
+  "debug": false
+}
