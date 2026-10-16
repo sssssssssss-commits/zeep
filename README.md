@@ -1,78 +1,40 @@
-# Rail Sync — Amazfit Active 2 高铁行程 MVP
+# 高铁行程 — Amazfit Active 2
 
-手机网页导入 12306 订单截图 → OCR/人工校对 → 配对码 → Zepp Side Service 拉数 → BLE 同步到手表 → `localStorage` 离线查看。
+在手机的 Zepp 设置页保存 12306 行程，手表连接时通过蓝牙同步，断开后从手表本地缓存查看。安装小程序后，更新行程不需要电脑。
 
-**不**开发独立 Android APK；**不**收集 12306 账号/密码/Cookie；原图识别后立即删除。
+## 更新行程
 
-## 目录
+1. 手机打开 12306，查看自己的订单并截图。
+2. 打开 Zepp → 高铁行程 → 设置，点「打开白描网页版」，从相册选择图片识别。
+3. 在白描复制全部文字，返回设置页，点击明确标出的粘贴区并长按粘贴，再点同步。同页多张车票会一起导入，不保存姓名。
+4. 也可以直接手填一行：
 
-| 路径 | 作用 |
-|------|------|
-| `server/` | FastAPI + SQLite；OCR、配对、行程同步；托管手机网页 |
-| `web/` | 手机导入页（打开 12306、选图、校对、配对码） |
-| `watch-app/` | Zepp OS 小程序（Device + Settings + Side Service） |
-
-## 1. 启动同步服务
-
-```bash
-cd server
-python -m venv .venv
-# Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-# 可选 OCR：pip install paddlepaddle paddleocr
-# PowerShell: $env:OCR_ENGINE="paddle"
-uvicorn app.main:app --host 0.0.0.0 --port 8787
+```text
+车次|日期|出发站|到达站|出发|到达|检票口|车厢|座位
+G1234|2026-10-20|北京南|上海虹桥|09:00|13:28|6A|05|12A
 ```
 
-手机浏览器打开 `http://<电脑局域网IP>:8787/`。
+手表打开小程序时会自动拉取；设置保存后，已打开的手表页面也会收到更新。蓝牙断开、退出 Zepp 或重启手表后，仍显示最后一次成功同步的行程。
 
-自检：
-
-```bash
-cd server
-python tests/test_parse.py
-```
-
-## 2. 手机导入
-
-1. 打开网页 → 记下 **配对码**。
-2. 「打开 12306」登录看订单后截图，或直接「从相册选择」。
-3. 校对字段 → 确认保存。可重复导入多趟。
-
-## 3. 手表小程序
+## 扫码安装手表小程序
 
 ```bash
 cd watch-app
 npm install
-# 用 Zeus CLI / Zepp 开发者工具打开本目录并安装到 Active 2
-# 请在 app.json 换成你自己的 appId
+npm run preview
 ```
 
-在 Zepp App 小程序设置中：
+首次运行会打开 Zepp 开放平台登录页。登录后生成 `watch-app/dist/install-qr.png`，二维码 7 天内有效。
 
-1. **配对码**：填网页上的 6 位码。
-2. **同步服务地址**：填 `http://<电脑局域网IP>:8787`（不要用 `127.0.0.1`，Side Service 走手机网络）。
-3. 手表打开「高铁行程」点 **刷新**。
+在 Zepp App 中进入「我的 → 设置 → 关于」，连续点击 Zepp 图标 7 次打开开发者模式。再进入已绑定设备页底部的开发者模式，扫描这张二维码即可安装到 Active 2 圆屏或方屏。`app.json` 里的 `appId` 需要换成开发者账号中的应用 ID。
 
-断蓝牙 / 退 Zepp / 重启手表后应仍能看到上次成功同步的行程。卸载小程序会清本地缓存。
+实机检查见 [ACCEPTANCE.md](ACCEPTANCE.md)。
 
-## 4. 实机验收清单
+## 边界
 
-见 [ACCEPTANCE.md](ACCEPTANCE.md)。
-
-## 参考实现
-
-未发现功能完全相同且成熟的 Zepp OS 高铁订单应用。本项目沿用这些官方模式：
-
-- [Zepp OS TodoList](https://github.com/zepp-health/zeppos-samples/tree/main/application/4.0/todo-list)：Device App、Settings App、Side Service 通信结构。
-- [Zepp OS FetchAPI](https://github.com/zepp-health/zeppos-samples/tree/main/application/4.0/fetch-api)：Side Service 网络请求。
-- [ZML](https://github.com/zepp-health/zml)：Device App 与 Side Service 的 BLE 消息封装。
-- [LocalStorage 文档](https://docs.zepp.com/docs/reference/device-app-api/newAPI/storage/localStorage/)：手表离线缓存。
-- [Awesome Zepp OS](https://github.com/zepp-health/awesome-zeppos)：社区项目索引。
-
-## 合规边界
-
-- 仅用户自有截图 + 人工确认。
-- 后端不存截图、不存 12306 凭证。
-- 同步失败保留手表旧缓存，不空刷。
-- 当前服务面向可信局域网 MVP。暴露到公网前应配置 HTTPS、反向代理限流和访问控制。
+- 不收集 12306 账号、密码或 Cookie，也不访问非公开接口。
+- Zepp 设置页没有相册文件选择 API，因此从设置页打开白描网页版，由手机浏览器选择相册图片。
+- 白描未提供通用公开 OCR API，本项目不调用其私有接口，也不接触白描账号密码。
+- 每次导入后，已有与新增行程会合并去重，并按出发日期时间升序排列。
+- 最多保留最近 10 趟。同步失败或手表未连接时，不覆盖手表上的旧缓存。
+- 卸载手表小程序会清除手表本地缓存。

@@ -4,7 +4,8 @@
   "description": "高铁行程同步到 Amazfit Active 2",
   "main": "app.js",
   "scripts": {
-    "test": "node utils/trip.check.js"
+    "test": "node utils/trip.check.js",
+    "preview": "node scripts/preview.cjs"
   },
   "author": "",
   "license": "MIT",
@@ -12,6 +13,8 @@
     "@zeppos/zml": "^0.0.43"
   },
   "devDependencies": {
-    "@zeppos/device-types": "^4.0.0"
+    "@zeppos/device-types": "^4.0.0",
+    "@zeppos/zeus-cli": "^1.9.3",
+    "qrcode": "^1.5.4"
   }
 }

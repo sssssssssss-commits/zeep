@@ -1,7 +1,6 @@
 **/__pycache__/
 **/.venv/
 **/node_modules/
-server/data/
 *.pyc
 .DS_Store
 dist/
